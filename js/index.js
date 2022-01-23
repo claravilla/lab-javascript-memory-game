@@ -29,6 +29,7 @@ const memoryGame = new MemoryGame(cards);
 
 window.addEventListener('load', (event) => {
   let html = '';
+  // memoryGame.shuffleCards();
   memoryGame.cards.forEach((pic) => {
     html += `
       <div class="card" data-card-name="${pic.name}">
@@ -44,8 +45,50 @@ window.addEventListener('load', (event) => {
   // Bind the click event of each element to a function
   document.querySelectorAll('.card').forEach((card) => {
     card.addEventListener('click', () => {
-      // TODO: write some code here
-      console.log(`Card clicked: ${card}`);
-    });
-  });
-});
+      // TODO: write some code her
+      //  card.querySelectorAll("div").forEach((div)=>{
+      //   div.classList.toggle("front");
+      //   div.classList.toggle("back");
+      //  } );
+
+      card.classList.add('turned');
+
+      memoryGame.pickedCards.push(card.getAttribute('data-card-name'));
+      console.log(memoryGame.pickedCards);
+
+      if (memoryGame.pickedCards.length === 2) {
+        if (
+          memoryGame.checkIfPair(
+            memoryGame.pickedCards[0],
+            memoryGame.pickedCards[1]
+          )
+        ) {
+          console.log('cards match');
+          document.querySelectorAll('.turned').forEach((eachCard) => {
+            eachCard.classList.add('blocked');
+            memoryGame.pickedCards = [];
+          });
+        } else {
+          console.log('cards dont match');
+          let interval = setTimeout(function () {
+            document.querySelectorAll('.turned').forEach((eachCard) => {
+              eachCard.classList.remove('turned');
+            });
+            memoryGame.pickedCards = [];
+          }, 1000);
+        }
+
+        let newInterval = setTimeout(function () {
+          if (memoryGame.checkIfFinished()) {
+            alert('you won');
+          }
+        }, 1000);
+      } //if i have 2 cards turned
+
+      document.getElementById('pairs-clicked').innerText =
+        memoryGame.pairsClicked;
+      document.getElementById('pairs-guessed').innerText =
+        memoryGame.pairsGuessed;
+    }); //card event listener
+  }); //forEach to add event listener
+}); //window event
